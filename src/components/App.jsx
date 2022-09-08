@@ -4,9 +4,11 @@ import { searchArtworks } from '../utils/api';
 import { SearchForm } from './SearchForm';
 import { Footer } from './Footer';
 import { useState } from 'react';
+import ImageDetailsPage from './ImageDetailsPage';
 
 export function App() {
 	const [artwork, setArtwork] = useState();
+	const [isSelected, setIsSelected] = useState(false);
 
 	function onSearchSubmit(query) {
 		// Search for the users's query.
@@ -19,18 +21,33 @@ export function App() {
 			setArtwork(json.data);
 		});
 	}
-	console.log('artwork', artwork);
+	function handleDetail(id) {
+		// when result is clicked, takes to ImageDetail Component that renders according to
+		// id
+		setIsSelected(true);
+	}
+
+	console.log('isSelected', isSelected);
+	// conditional rendering of components
+
 	return (
 		<div className="App">
-			<SearchForm onSearchSubmit={onSearchSubmit} />
 			<h1>TCL Career Lab Art Finder</h1>
+			{!artwork && <SearchForm onSearchSubmit={onSearchSubmit} />}
 			{artwork &&
+				!isSelected &&
 				artwork.map((art) => (
 					<>
-						<h3 key={art.id}>{art.title}</h3>
-						<h4>{art.artist_title}</h4>
+						<label key={art.id}>
+							<h3>{art.title}</h3>
+							<h4>{art.artist_title}</h4>
+							<button onClick={() => handleDetail(art.id)}>Details?</button>
+						</label>
 					</>
 				))}
+			{isSelected && (
+				<ImageDetailsPage isSelected={true} setIsSelected={setIsSelected} />
+			)}
 			<Footer />
 		</div>
 	);
